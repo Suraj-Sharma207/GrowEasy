@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CRMStatus {
+  GOOD_LEAD_FOLLOW_UP
+  DID_NOT_CONNECT
+  BAD_LEAD
+  SALE_DONE
+}
+
+enum DataSource {
+  leads_on_demand
+  meridian_tower
+  eden_park
+  varah_swamy
+  sarjapur_plots
+}
+
+enum ImportStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model ImportBatch {
+  id             String         @id @default(uuid())
+  fileName       String
+  totalRows      Int            @default(0)
+  importedRows   Int            @default(0)
+  skippedRows    Int            @default(0)
+  status         ImportStatus   @default(PROCESSING)
+  processingTime Float?
+  createdAt      DateTime       @default(now())
+
+  leads          Lead[]
+  skippedLeads   SkippedLead[]
+
+  @@map("import_batches")
+}
+
+model Lead {
+  id                       String       @id @default(uuid())
+  name                     String
+  email                    String?
+  countryCode              String?
+  mobileWithoutCountryCode String?
+  company                  String?
+  city                     String?
+  state                    String?
+  country                  String?
+  leadOwner                String?
+  crmStatus                CRMStatus    @default(GOOD_LEAD_FOLLOW_UP)
+  crmNote                  String?
+  dataSource               DataSource?
+  possessionTime           DateTime?
+  description              String?
+  
+  importBatchId            String?
+  importBatch              ImportBatch? @relation(fields: [importBatchId], references: [id])
+
+  createdAt                DateTime     @default(now())
+  updatedAt                DateTime     @updatedAt
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([mobileWithoutCountryCode])
+  @@index([crmStatus])
+  @@index([company])
+  @@index([city])
+  @@map("leads")
+}
+
+model SkippedLead {
+  id        String      @id @default(uuid())
+  reason    String
+  rawData   Json
+  
+  batchId   String
+  batch     ImportBatch @relation(fields: [batchId], references: [id])
+  
+  createdAt DateTime    @default(now())
+
+  @@map("skipped_leads")
+}

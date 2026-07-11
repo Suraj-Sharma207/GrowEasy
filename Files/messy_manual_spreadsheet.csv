@@ -1,0 +1,4 @@
+Customer,Cell,Mail,Extra Email,Telephone,Address,Random Column
+Rohit,9876541111,rohit@mail.com,alt@mail.com,9999999999,Delhi,VIP
+Pooja,,,,,Mumbai,Missing contact
+Aman,8888888888,aman@mail.com,aman2@mail.com,7777777777,Pune,Duplicate phones
