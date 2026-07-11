@@ -1,0 +1,12 @@
+{
+  "name": "groweasy-root",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend"
+  ],
+  "scripts": {
+    "build": "npx prisma generate --schema=backend/prisma/schema.prisma && npm run build --workspace=backend",
+    "start": "npm run start --workspace=backend"
+  }
+}
